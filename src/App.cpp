@@ -1,18 +1,35 @@
 #include "App.hpp"
+#include "renderer/Window.hpp"
 
-App::App() {}
+App::App()
+    : _window(800, 600), _chessGame()
+{
+    _renderer = Renderer(_window);
+}
 
 App::~App() {}
 
 void App::run()
 {
-    // This is where the main loop will be
+    // Start the game
     _chessGame.start();
-    while (true)
+
+    // This is where the main loop will be
+    while (!_window.shouldClose())
     {
-        // This is where the main loop will be
+        // Poll events, update the game, render the game, swap buffers
+        _window.pollEvents();
+
+        // Update the game
         _chessGame.update();
+
+        // Render the game
         _renderer.render(_chessGame);
+
+        // Swap buffers
+        _window.swapBuffers();
     }
+
+    // End the game
     _chessGame.end();
 }
