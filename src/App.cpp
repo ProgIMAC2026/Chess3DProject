@@ -7,4 +7,11 @@ App::~App() {}
 void App::run()
 {
     // This is where the main loop will be
+    _chessGame.start();
+    while (true)
+    {
+        // This is where the main loop will be
+        _chessGame.update();
+    }
+    _chessGame.end();
 }
