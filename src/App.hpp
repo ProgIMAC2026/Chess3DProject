@@ -2,13 +2,13 @@
 
 #include "chessgame/ChessGame.hpp"
 #include "renderer/Renderer.hpp"
-#include "renderer/Window.hpp"
+#include "renderer/renderer3D/Renderer3D.hpp"
+#include "renderer/rendererTerminal/TerminalRenderer.hpp"
+
 class App {
 private:
-    /* data */
     ChessGame _chessGame;
-    Renderer  _renderer;
-    Window    _window;
+    Renderer* _rendererPtr = new TerminalRenderer();
 
 public:
     App();
