@@ -1,3 +1,7 @@
 #pragma once
 
-class ShaderProgram {};
+#include "Shader.hpp"
+class ShaderProgram {
+    Shader vertexShader;
+    Shader fragmentShader;
+};
