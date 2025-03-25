@@ -1,4 +1,5 @@
 #include "TerminalRenderer.hpp"
+#include <algorithm>
 #include <iostream>
 #include "../../chessgame/piece/Piece.hpp"
 
