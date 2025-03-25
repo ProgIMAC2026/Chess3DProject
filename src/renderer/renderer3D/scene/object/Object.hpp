@@ -31,4 +31,7 @@ public:
 
     Texture* getTexture() const;
     void     setTexture(Texture* texture);
+
+    // Methods
+    void init();
 };
