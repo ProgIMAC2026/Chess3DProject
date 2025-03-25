@@ -1,5 +1,4 @@
 #include "Mesh.hpp"
-#include <gl/gl.h>
 #include <utility>
 
 Mesh::Mesh(std::vector<GLfloat> vertices, std::vector<GLushort> indices)
