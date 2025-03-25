@@ -1,3 +1,6 @@
 #pragma once
 
-class Light {};
+class Light {
+public:
+    void init();
+};
