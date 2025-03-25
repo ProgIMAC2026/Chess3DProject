@@ -1,4 +1,4 @@
-#pragma one
+#pragma once
 
 #include <vector>
 #include "light/Light.hpp"
@@ -7,4 +7,7 @@
 class Scene {
     std::vector<Object> objects;
     std::vector<Light>  lights;
+
+public:
+    void init();
 };

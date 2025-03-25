@@ -11,10 +11,13 @@ Renderer3D::Renderer3D()
     init();
     window.create();
     glfwMakeContextCurrent(window.getWindow());
+
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 };
 
 void Renderer3D::render(ChessGame& chessGame)
 {
+    scene.init();
     while (!window.shouldClose())
     {
         window.pollEvents();
