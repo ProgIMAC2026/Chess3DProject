@@ -1,8 +1,10 @@
 #pragma once
 
 #include "chessboard/ChessBoard.hpp"
+#include "chessboard/ChessTile.hpp"
 class ChessGame {
-    ChessBoard chessBoard;
+    ChessBoard _chessBoard;
+    ChessTile* _selectedTile = nullptr;
 
 public:
     ChessGame();
@@ -11,5 +13,8 @@ public:
     void update();
     void end();
 
-    ChessBoard& getChessBoard() { return chessBoard; }
+    ChessBoard& getChessBoard() { return _chessBoard; }
+
+    ChessTile* getSelectedTile() { return _selectedTile; }
+    void       setSelectedTile(ChessTile* tile) { _selectedTile = tile; }
 };

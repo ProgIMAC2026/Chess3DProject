@@ -7,12 +7,9 @@ ChessBoard::ChessBoard()
     {
         for (int j = 0; j < 8; j++)
         {
-            tiles[i][j] = new ChessTile({i, j});
+            tiles[i][j] = new ChessTile({i, j}, this);
         }
     }
-
-    // Set pieces
-    tiles[3][4]->setPiece(new Piece());
 }
 
 ChessBoard::~ChessBoard()

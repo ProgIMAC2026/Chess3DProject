@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ChessTile.hpp"
+
 class ChessBoard {
     ChessTile* tiles[8][8];
 
@@ -9,4 +10,10 @@ public:
     ~ChessBoard();
 
     ChessTile* getTile(PositionTile position) { return tiles[position.x][position.y]; }
+
+    template<typename PieceType>
+    void createPiece(Color color, ChessTile* tile)
+    {
+        tile->createPiece<PieceType>(color);
+    }
 };
