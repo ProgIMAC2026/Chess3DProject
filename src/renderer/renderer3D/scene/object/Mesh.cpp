@@ -4,9 +4,8 @@
 Mesh::Mesh(std::vector<GLfloat> vertices, std::vector<GLushort> indices)
     : vertices(std::move(vertices)), indices(std::move(indices))
 {
-    setupVAO();
     setupVBO();
-    setupIBO();
+    setupVAO();
 }
 
 GLuint Mesh::getVAO() const
