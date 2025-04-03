@@ -28,5 +28,6 @@ public:
 
     void moveTo(ChessTile* newTile) { setTile(newTile); }
 
+    Color        getColor() const { return _color; }
     virtual char getSymbol() { return 'P'; }
 };
