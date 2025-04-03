@@ -1,7 +1,7 @@
 #pragma once
 
 #include <lib/glm/glm.hpp>
-#include "../shader/ShaderProgram.hpp"
+#include "../../shader/ShaderProgram.hpp"
 #include "../texture/Texture.hpp"
 #include "Mesh.hpp"
 
