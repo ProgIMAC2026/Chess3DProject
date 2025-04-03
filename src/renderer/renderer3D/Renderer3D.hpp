@@ -4,8 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include "../Renderer.hpp"
-#include "Window.hpp"
 #include "scene/Scene.hpp"
+#include "window/Window.hpp"
 
 class Renderer3D : public Renderer {
 private:
