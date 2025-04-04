@@ -21,6 +21,7 @@ private:
     void setupIBO();
 
 public:
+    Mesh() = default;
     Mesh(std::vector<GLfloat> vertices, std::vector<GLushort> indices);
     // Getter
     GLuint getVAO() const;
