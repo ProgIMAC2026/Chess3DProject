@@ -1,13 +1,30 @@
 #pragma once
 
-#include <lib/glm/glm.hpp>
+#include <lib/glm/ext.hpp>
 
 struct Transform {
-    glm::vec3 position;
-    glm::vec3 rotation;
-    glm::vec3 scale;
+    glm::vec3 _position;
+    glm::vec3 _rotation;
+    glm::vec3 _scale;
     Transform()
-        : position(0.0f), rotation(0.0f), scale(1.0f) {}
+        : _position(0.0f), _rotation(0.0f), _scale(1.0f) {}
     Transform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
-        : position(position), rotation(rotation), scale(scale) {}
+        : _position(position), _rotation(rotation), _scale(scale) {}
+
+    void move(const glm::vec3& delta)
+    {
+        _position += delta;
+    }
+
+    void rotate(const glm::vec3& delta)
+    {
+        _rotation += delta;
+    }
+
+    void scale(const glm::vec3& factor)
+    {
+        _scale *= factor;
+    }
+
+    glm::mat4 getModelMatrix() const;
 };

@@ -3,12 +3,11 @@
 #include <lib/glm/glm.hpp>
 #include "../../shader/ShaderProgram.hpp"
 #include "../texture/Texture.hpp"
+#include "../utils/Transform.hpp"
 #include "Mesh.hpp"
 
 class Object {
-    glm::vec3 position;
-    glm::vec3 rotation;
-    glm::vec3 scale;
+    Transform transform;
 
     Mesh*          meshPtr;
     ShaderProgram* shaderProgram;
@@ -16,14 +15,10 @@ class Object {
 
 public:
     Object() = default;
-    Object(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, Mesh* meshPtr, ShaderProgram* shaderProgram, Texture* texture);
+    Object(const Transform& transform, Mesh* meshPtr, ShaderProgram* shaderProgram, Texture* texture);
     // Getter Setter
-    glm::vec3 getPosition() const;
-    void      setPosition(const glm::vec3& position);
-    glm::vec3 getRotation() const;
-    void      setRotation(const glm::vec3& rotation);
-    glm::vec3 getScale() const;
-    void      setScale(const glm::vec3& scale);
+    Transform getTransform() const { return transform; }
+    void      setTransform(const Transform& transform) { this->transform = transform; }
 
     Mesh* getMeshPtr() const { return meshPtr; }
     void  setMeshPtr(Mesh* meshPtr);
@@ -33,4 +28,8 @@ public:
 
     Texture* getTexture() const;
     void     setTexture(Texture* texture);
+
+    glm::mat4 getModelMatrix() const { return transform.getModelMatrix(); }
+
+    void move(const glm::vec3& translation) { transform.move(translation); }
 };
