@@ -2,7 +2,6 @@
 #include <filesystem>
 #include <lib/glm/ext.hpp>
 #include "../../utils/errors/Exception.hpp"
-#include "loader/meshLoading.hpp"
 #include "scene/object/Mesh.hpp"
 #include "scene/object/Object.hpp"
 #include "scene/utils/Transform.hpp"
