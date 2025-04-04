@@ -20,13 +20,15 @@ public:
     Scene(std::vector<Object> objects, std::vector<Light> lights, Camera camera)
         : objects(std::move(objects)), lights(std::move(lights)), camera(camera) {};
 
-    void addObject(Object object);
-    void addLight(const Light& light);
-
+    // Getters
     std::vector<Object>& getObjects();
     std::vector<Light>&  getLights();
 
     Camera& getCamera();
 
     glm::mat4 getModelMatrix() const { return modelMatrix; }
+
+    // Setters
+    void addObject(Object object);
+    void addLight(const Light& light);
 };
