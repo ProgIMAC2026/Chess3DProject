@@ -1,4 +1,5 @@
 #include "Pawn.hpp"
+#include <iostream>
 #include "../chessboard/ChessBoard.hpp"
 
 std::vector<ChessTile*> Pawn::getPossibleMoves()
@@ -15,24 +16,26 @@ std::vector<ChessTile*> Pawn::getPossibleMoves()
     int          x          = currentPos.x;
     int          y          = currentPos.y;
 
-    int direction = (_color == Color::WHITE) ? 1 : -1;
-    int startRow  = (_color == Color::WHITE) ? 1 : 6;
+    int direction  = (_color == Color::WHITE) ? 1 : -1;
+    int startRow   = (_color == Color::WHITE) ? 1 : 6;
+    int passantRow = (_color == Color::WHITE) ? 4 : 3;
 
     // Vérifier la case devant
-    PositionTile frontPos  = {x, y + direction};
-    ChessTile*   frontTile = board->getTile(frontPos);
-    if (frontTile && !frontTile->getPiece())
+    if (x + direction >= 0 && x + direction < 8) // Vérifier les limites du plateau
     {
-        moves.push_back(frontTile);
-
-        // Vérifier si le pion peut avancer de deux cases
-        if (y == startRow)
+        ChessTile* frontTile = board->getTile({x + direction, y});
+        if (frontTile && !frontTile->getPiece())
         {
-            PositionTile doubleMovePos  = {x, y + 2 * direction};
-            ChessTile*   doubleMoveTile = board->getTile(doubleMovePos);
-            if (doubleMoveTile && !doubleMoveTile->getPiece())
+            moves.push_back(frontTile);
+
+            // Vérifier si le pion peut avancer de deux cases
+            if (y == startRow)
             {
-                moves.push_back(doubleMoveTile);
+                ChessTile* doubleMoveTile = board->getTile({x + 2 * direction, y});
+                if (doubleMoveTile && !doubleMoveTile->getPiece())
+                {
+                    moves.push_back(doubleMoveTile);
+                }
             }
         }
     }
@@ -40,15 +43,47 @@ std::vector<ChessTile*> Pawn::getPossibleMoves()
     // Vérifier les captures diagonales
     for (int dx : {-1, 1})
     {
-        PositionTile diagonalPos  = {x + dx, y + direction};
-        ChessTile*   diagonalTile = board->getTile(diagonalPos);
+        int newX = x + direction;
+        int newY = y + dx;
 
-        if (diagonalTile)
+        if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) // Vérifier les limites du plateau
         {
-            Piece* targetPiece = diagonalTile->getPiece();
-            if (targetPiece && targetPiece->getColor() != _color)
+            ChessTile* diagonalTile = board->getTile({newX, newY});
+            if (diagonalTile)
             {
-                moves.push_back(diagonalTile);
+                Piece* targetPiece = diagonalTile->getPiece();
+                if (targetPiece && targetPiece->getColor() != _color)
+                {
+                    moves.push_back(diagonalTile); // Capture d'une pièce adverse
+                }
+            }
+        }
+    }
+
+    if (x == passantRow)
+    {
+        for (int dx : {-1, 1}) // Vérification des cases diagonales gauche et droite
+        {
+            int newY = y + dx;         // Déplacement gauche-droite
+            if (newY >= 0 && newY < 8) // Vérifier les limites du plateau
+            {
+                ChessTile* adjacentTile = board->getTile({x, newY});
+                if (adjacentTile)
+                {
+                    Piece* adjacentPiece = adjacentTile->getPiece();
+                    if (adjacentPiece && adjacentPiece->isPawn() && adjacentPiece->getColor() != _color)
+                    {
+                        // Vérification de la possibilité de prise en passant
+                        if (board->isEnPassantAvailable(adjacentTile))
+                        {
+                            ChessTile* enPassantTile = board->getTile({x + direction, newY}); // Case de prise en passant
+                            if (enPassantTile)
+                            {
+                                moves.push_back(enPassantTile); // Ajout de la case de prise en passant
+                            }
+                        }
+                    }
+                }
             }
         }
     }
