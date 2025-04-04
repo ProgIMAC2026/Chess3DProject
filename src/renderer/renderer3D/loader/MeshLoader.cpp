@@ -1,0 +1,74 @@
+#include "MeshLoader.hpp"
+#include <tiny_obj_loader.h>
+
+// Load a mesh from a file
+static Mesh loadMesh(const std::filesystem::path& filepath)
+{
+    std::vector<GLfloat>  vertices;
+    std::vector<GLushort> indices;
+
+    tinyobj::attrib_t                attrib;
+    std::vector<tinyobj::shape_t>    shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string                      warn;
+    std::string                      err;
+
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.generic_string().c_str(), nullptr, true))
+    {
+        throw -1;
+    }
+
+    // Loop over shapes
+    for (auto& shape : shapes)
+    {
+        // Loop over faces(polygon)
+        size_t index_offset = 0;
+        for (size_t i = 0; i < shape.mesh.indices.size(); i++)
+        {
+            tinyobj::index_t index = shapes[0].mesh.indices[i];
+            vertices.push_back(attrib.vertices[3 * index.vertex_index + 0]);
+            vertices.push_back(attrib.vertices[3 * index.vertex_index + 1]);
+            vertices.push_back(attrib.vertices[3 * index.vertex_index + 2]);
+
+            if (!attrib.normals.empty())
+            {
+                vertices.push_back(attrib.normals[3 * index.normal_index + 0]);
+                vertices.push_back(attrib.normals[3 * index.normal_index + 1]);
+                vertices.push_back(attrib.normals[3 * index.normal_index + 2]);
+            }
+            else
+            {
+                vertices.push_back(0.0f);
+                vertices.push_back(0.0f);
+                vertices.push_back(0.0f);
+            }
+            indices.push_back(i);
+        }
+    }
+    return {vertices, indices};
+}
+
+void MeshLoader::LoadMesh(const std::string& name)
+{
+    if (loadedMeshes.find(name) == loadedMeshes.end())
+    {
+        loadedMeshes[name] = loadMesh(meshPaths.at(name));
+    }
+}
+
+void MeshLoader::LoadAllMeshes()
+{
+    for (const auto& [name, path] : meshPaths)
+    {
+        LoadMesh(name);
+    }
+}
+
+Mesh* MeshLoader::getMesh(const std::string& name)
+{
+    if (loadedMeshes.find(name) != loadedMeshes.end())
+    {
+        return &loadedMeshes[name];
+    }
+    return nullptr;
+}
