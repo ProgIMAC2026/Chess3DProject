@@ -1,11 +1,5 @@
 #include "Scene.hpp"
 
-void Scene::init()
-{
-    for (auto& light : lights)
-        light.init();
-}
-
 void Scene::addObject(Object object)
 {
     objects.push_back(object);

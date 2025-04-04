@@ -42,7 +42,6 @@ Renderer3D::Renderer3D()
 
 void Renderer3D::render(ChessGame& chessGame)
 {
-    scene.init();
     glEnable(GL_DEPTH_TEST);
     while (!window.shouldClose())
     {

@@ -2,5 +2,4 @@
 
 class Light {
 public:
-    void init();
 };

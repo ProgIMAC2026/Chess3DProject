@@ -20,8 +20,6 @@ public:
     Scene(std::vector<Object> objects, std::vector<Light> lights, Camera camera)
         : objects(std::move(objects)), lights(std::move(lights)), camera(camera) {};
 
-    void init();
-
     void addObject(Object object);
     void addLight(const Light& light);
 
