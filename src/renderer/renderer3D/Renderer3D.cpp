@@ -1,6 +1,7 @@
 #include "Renderer3D.hpp"
 #include <filesystem>
 #include <lib/glm/ext.hpp>
+#include <memory>
 #include "../../utils/errors/Exception.hpp"
 #include "GLFW/glfw3.h"
 #include "scene/object/Mesh.hpp"
@@ -8,8 +9,7 @@
 #include "scene/utils/Transform.hpp"
 #include "shader/ShaderProgram.hpp"
 
-Renderer3D::Renderer3D()
-    : scene(), window(800, 600), shaderProgram(nullptr)
+void Renderer3D::initGlad()
 {
     // Initialize GLAD to load OpenGL functions
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -17,25 +17,36 @@ Renderer3D::Renderer3D()
         throw Exception("Failed to initialize GLAD");
     }
 
+    // Set the viewport size
+    int width, height;
+    glfwGetFramebufferSize(window.getWindow(), &width, &height);
+    glViewport(0, 0, width, height);
+}
+
+Renderer3D::Renderer3D()
+    : scene(), window(800, 600), shaderProgramPtr(nullptr)
+{
+    initGlad();
+
     // Set the clear color
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+    // Load the meshes
     meshLoader.LoadAllMeshes();
 
     std::filesystem::path ressources_path = "C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res";
     // Load the shaders
-
-    shaderProgram = new ShaderProgram(
+    shaderProgramPtr = std::make_unique<ShaderProgram>(
         ressources_path / "shaders" / "vertex.glsl",
         ressources_path / "shaders" / "fragment.glsl"
     );
 
-    shaderProgram->link();
+    shaderProgramPtr->link();
 
     Object object(
         Transform(),
         meshLoader.getMesh("knight"),
-        shaderProgram,
+        shaderProgramPtr.get(),
         nullptr
     );
 
@@ -58,26 +69,26 @@ void Renderer3D::render(ChessGame& chessGame)
 
 void Renderer3D::renderScene()
 {
-    if (!shaderProgram)
+    if (!shaderProgramPtr)
     {
         throw ShaderException("Shader program is not initialized in " + std::string(__FUNCTION__));
     }
     // Set the shader program to use
 
     // Set the view and projection matrices
-    glUseProgram(shaderProgram->getId());
-    shaderProgram->uniformMatrix4fv("viewMatrix", glm::value_ptr(scene.getCamera().getViewMatrix()));
-    shaderProgram->uniformMatrix4fv("projectionMatrix", glm::value_ptr(scene.getCamera().getProjectionMatrix()));
+    glUseProgram(shaderProgramPtr->getId());
+    shaderProgramPtr->uniformMatrix4fv("viewMatrix", glm::value_ptr(scene.getCamera().getViewMatrix()));
+    shaderProgramPtr->uniformMatrix4fv("projectionMatrix", glm::value_ptr(scene.getCamera().getProjectionMatrix()));
 
     // Set the model matrix
 
     // Set the camera position
-    shaderProgram->uniform3fv("viewPos", glm::value_ptr(scene.getCamera().getPosition()));
+    shaderProgramPtr->uniform3fv("viewPos", glm::value_ptr(scene.getCamera().getPosition()));
 
     // Render each object in the scene
     for (Object& obj : scene.getObjects())
     {
-        shaderProgram->uniformMatrix4fv("modelMatrix", glm::value_ptr(obj.getModelMatrix()));
+        shaderProgramPtr->uniformMatrix4fv("modelMatrix", glm::value_ptr(obj.getModelMatrix()));
         renderObject(obj);
     }
 }

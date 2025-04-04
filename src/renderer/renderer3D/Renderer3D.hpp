@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "loader/MeshLoader.hpp"
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -14,8 +15,11 @@ private:
     Scene  scene;
     Window window;
 
-    ShaderProgram* shaderProgram;
-    MeshLoader     meshLoader;
+    std::unique_ptr<ShaderProgram> shaderProgramPtr;
+    MeshLoader                     meshLoader;
+
+    // Initializes the OpenGL context and sets up the viewport
+    void initGlad();
 
 public:
     Renderer3D();
