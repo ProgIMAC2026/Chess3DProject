@@ -9,7 +9,7 @@ class ShaderProgram {
 
 public:
     // Constructor and destructor
-    ShaderProgram() = default;
+    ShaderProgram() = delete;
     ShaderProgram(
         std::filesystem::path vertexShaderPath,
         std::filesystem::path fragmentShaderPath

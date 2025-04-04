@@ -4,15 +4,16 @@
 #include <filesystem>
 
 class Shader {
-    GLuint        _id{};
+    GLuint        _id;
     const GLchar* shaderSource;
     int           _shaderType;
 
     void readShaderSource(const std::filesystem::path& filePath);
 
 public:
-    // Constructor and destructor
-    Shader() = default;
     Shader(const std::filesystem::path& filePath, int shaderType);
+
+    void compileShader();
+
     GLuint getId() const { return _id; }
 };

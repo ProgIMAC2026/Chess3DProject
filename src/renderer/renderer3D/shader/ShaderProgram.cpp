@@ -1,4 +1,5 @@
 #include "ShaderProgram.hpp"
+#include "../../../utils/errors/Exception.hpp"
 
 ShaderProgram::ShaderProgram(
     std::filesystem::path vertexShaderPath,
@@ -6,6 +7,9 @@ ShaderProgram::ShaderProgram(
 )
     : _id(glCreateProgram()), _vertexShader(vertexShaderPath, GL_VERTEX_SHADER), _fragmentShader(fragmentShaderPath, GL_FRAGMENT_SHADER)
 {
+    if (_id == 0)
+        throw ShaderException("Error creating shader program in " + std::string(__FUNCTION__));
+
     glAttachShader(_id, _vertexShader.getId());
     glAttachShader(_id, _fragmentShader.getId());
 }
@@ -18,6 +22,14 @@ ShaderProgram::~ShaderProgram()
 void ShaderProgram::link()
 {
     glLinkProgram(_id);
+
+    // Check for linking errors
+    GLint status;
+    glGetProgramiv(_id, GL_LINK_STATUS, &status);
+    if (status != GL_TRUE)
+    {
+        throw ShaderException("Error linking shader program in " + std::string(__FUNCTION__));
+    }
 }
 
 void ShaderProgram::uniformMatrix4fv(const char* name, const GLfloat* value)
