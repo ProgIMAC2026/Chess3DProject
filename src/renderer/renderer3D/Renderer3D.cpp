@@ -8,7 +8,7 @@ void Renderer3D::init()
 Renderer3D::Renderer3D()
     : scene(), window(400, 400)
 {
-    init();
+    glfwInit();
     window.create();
     glfwMakeContextCurrent(window.getWindow());
 
