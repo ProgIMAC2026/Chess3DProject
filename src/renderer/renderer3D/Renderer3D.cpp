@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <lib/glm/ext.hpp>
 #include "../../utils/errors/Exception.hpp"
+#include "GLFW/glfw3.h"
 #include "scene/object/Mesh.hpp"
 #include "scene/object/Object.hpp"
 #include "scene/utils/Transform.hpp"
@@ -10,12 +11,13 @@
 Renderer3D::Renderer3D()
     : scene(), window(800, 600), shaderProgram(nullptr)
 {
-    glfwInit();
-    window.create();
-    glfwMakeContextCurrent(window.getWindow());
+    // Initialize GLAD to load OpenGL functions
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        throw Exception("Failed to initialize GLAD");
+    }
 
-    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-
+    // Set the clear color
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     meshLoader.LoadAllMeshes();

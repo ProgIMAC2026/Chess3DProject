@@ -15,8 +15,7 @@ private:
     Window window;
 
     ShaderProgram* shaderProgram;
-
-    MeshLoader meshLoader;
+    MeshLoader     meshLoader;
 
 public:
     Renderer3D();
