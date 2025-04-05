@@ -29,4 +29,7 @@ public:
 
     void setPiece(Piece* piece) { _piecePtr = piece; }
     void removePiece() { _piecePtr = nullptr; }
+
+    bool hasPiece() const { return _piecePtr != nullptr; }
+    bool isEmpty() const { return _piecePtr == nullptr; }
 };

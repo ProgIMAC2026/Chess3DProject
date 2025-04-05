@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "ChessTile.hpp"
 
 class ChessBoard {
@@ -15,5 +16,21 @@ public:
     void createPiece(Color color, ChessTile* tile)
     {
         tile->createPiece<PieceType>(color);
+    }
+
+    std::vector<Piece*> getPieces() const
+    {
+        std::vector<Piece*> pieces;
+        for (int i = 0; i < 8; ++i)
+        {
+            for (int j = 0; j < 8; ++j)
+            {
+                if (tiles[i][j]->hasPiece())
+                {
+                    pieces.push_back(tiles[i][j]->getPiece());
+                }
+            }
+        }
+        return pieces;
     }
 };
