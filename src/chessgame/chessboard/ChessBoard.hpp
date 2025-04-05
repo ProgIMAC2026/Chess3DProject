@@ -12,6 +12,18 @@ public:
 
     ChessTile* getTile(PositionTile position) { return tiles[position.x][position.y]; }
 
+    ChessTile* lastMovedPawnTile = nullptr;
+
+    void setLastMovedPawnTile(ChessTile* tile)
+    {
+        lastMovedPawnTile = tile;
+    }
+
+    bool isEnPassantAvailable(ChessTile* tile) const
+    {
+        return lastMovedPawnTile == tile;
+    }
+
     template<typename PieceType>
     void createPiece(Color color, ChessTile* tile)
     {

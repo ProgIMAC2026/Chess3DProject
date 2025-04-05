@@ -10,4 +10,5 @@ public:
         _type = PieceType::PAWN;
     }
     std::vector<ChessTile*> getPossibleMoves() override;
+    bool                    isPawn() const override { return true; }
 };
