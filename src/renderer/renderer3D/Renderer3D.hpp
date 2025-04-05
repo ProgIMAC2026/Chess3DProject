@@ -1,14 +1,15 @@
 #pragma once
 
-#include <memory>
-#include "loader/MeshLoader.hpp"
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include <memory>
 #include "../Renderer.hpp"
+#include "loader/MeshChessLoader.hpp"
 #include "scene/Scene.hpp"
 #include "shader/ShaderProgram.hpp"
 #include "window/Window.hpp"
+
 
 class Renderer3D : public Renderer {
 private:
@@ -16,7 +17,7 @@ private:
     Window window;
 
     std::unique_ptr<ShaderProgram> shaderProgramPtr;
-    MeshLoader                     meshLoader;
+    MeshChessLoader                meshLoader;
 
     // Initializes the OpenGL context and sets up the viewport
     void initGlad();

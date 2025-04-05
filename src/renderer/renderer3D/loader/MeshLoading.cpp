@@ -1,8 +1,7 @@
-#include "MeshLoader.hpp"
+#include "MeshLoading.hpp"
 #include <tiny_obj_loader.h>
 
-// Load a mesh from a file
-static Mesh loadMesh(const std::filesystem::path& filepath)
+Mesh loadMesh(const std::filesystem::path& filepath)
 {
     std::vector<GLfloat>  vertices;
     std::vector<GLushort> indices;
@@ -46,29 +45,4 @@ static Mesh loadMesh(const std::filesystem::path& filepath)
         }
     }
     return {vertices, indices};
-}
-
-void MeshLoader::LoadMesh(const std::string& name)
-{
-    if (loadedMeshes.find(name) == loadedMeshes.end())
-    {
-        loadedMeshes[name] = loadMesh(meshPaths.at(name));
-    }
-}
-
-void MeshLoader::LoadAllMeshes()
-{
-    for (const auto& [name, path] : meshPaths)
-    {
-        LoadMesh(name);
-    }
-}
-
-Mesh* MeshLoader::getMesh(const std::string& name)
-{
-    if (loadedMeshes.find(name) != loadedMeshes.end())
-    {
-        return &loadedMeshes[name];
-    }
-    return nullptr;
 }
