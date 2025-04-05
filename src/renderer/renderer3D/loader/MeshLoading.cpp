@@ -24,7 +24,7 @@ Mesh loadMesh(const std::filesystem::path& filepath)
         size_t index_offset = 0;
         for (size_t i = 0; i < shape.mesh.indices.size(); i++)
         {
-            tinyobj::index_t index = shapes[0].mesh.indices[i];
+            tinyobj::index_t index = shape.mesh.indices[i];
             vertices.push_back(attrib.vertices[3 * index.vertex_index + 0]);
             vertices.push_back(attrib.vertices[3 * index.vertex_index + 1]);
             vertices.push_back(attrib.vertices[3 * index.vertex_index + 2]);
