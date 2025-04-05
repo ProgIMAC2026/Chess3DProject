@@ -1,6 +1,7 @@
 #include "Pawn.hpp"
 #include <iostream>
 #include "../chessboard/ChessBoard.hpp"
+#include "chessgame/piece/PieceType.hpp"
 
 std::vector<ChessTile*> Pawn::getPossibleMoves()
 {
@@ -71,7 +72,7 @@ std::vector<ChessTile*> Pawn::getPossibleMoves()
                 if (adjacentTile)
                 {
                     Piece* adjacentPiece = adjacentTile->getPiece();
-                    if (adjacentPiece && adjacentPiece->isPawn() && adjacentPiece->getColor() != _color)
+                    if (adjacentPiece && adjacentPiece->getType() == PieceType::PAWN && adjacentPiece->getColor() != _color)
                     {
                         // Vérification de la possibilité de prise en passant
                         if (board->isEnPassantAvailable(adjacentTile))

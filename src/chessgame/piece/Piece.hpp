@@ -32,8 +32,4 @@ public:
     virtual PieceType getType() { return _type; }
 
     void moveTo(ChessTile* newTile) { setTile(newTile); }
-
-    Color        getColor() const { return _color; }
-    virtual bool isPawn() const { return false; }
-    virtual char getSymbol() { return 'P'; }
 };
