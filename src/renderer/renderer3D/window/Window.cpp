@@ -1,4 +1,6 @@
 #include "Window.hpp"
+#include <iostream>
+#include "GLFW/glfw3.h"
 
 Window::Window(int width, int height)
     : _width(width), _height(height)
@@ -16,6 +18,18 @@ Window::Window(int width, int height)
     }
 
     glfwMakeContextCurrent(window);
+
+    glfwSetWindowUserPointer(window, this);
+
+    auto func = [](GLFWwindow* w, int key, int scancode, int action, int mods) {
+        auto* window = static_cast<Window*>(glfwGetWindowUserPointer(w));
+        if (window)
+        {
+            window->onKeyPress(w, key, scancode, action, mods); // Call the key press function
+        }
+    };
+
+    glfwSetKeyCallback(window, func); // Set the key callback function
 }
 
 Window::~Window()
@@ -37,4 +51,15 @@ void Window::swapBuffers()
 void Window::pollEvents()
 {
     glfwPollEvents();
+}
+
+void Window::onKeyPress(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (action == GLFW_PRESS)
+    {
+        if (_onKeyPress)
+        {
+            _onKeyPress(key); // Call the left key press function
+        }
+    }
 }

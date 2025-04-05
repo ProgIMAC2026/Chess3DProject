@@ -1,24 +1,28 @@
 #include "Renderer3D.hpp"
+#include <cmath>
 #include <filesystem>
+#include <iostream>
 #include <lib/glm/ext.hpp>
 #include <memory>
-#include "../../utils/errors/Exception.hpp"
 #include "GLFW/glfw3.h"
+#include "loader/meshLoading.hpp"
+#include "renderer/renderer3D/shader/ShaderProgram.hpp"
+#include "scene/Scene.hpp"
 #include "scene/object/Mesh.hpp"
 #include "scene/object/Object.hpp"
-#include "scene/utils/Transform.hpp"
-#include "shader/ShaderProgram.hpp"
+#include "utils/errors/Exception.hpp"
 
 void Renderer3D::initGlad()
 {
     // Initialize GLAD to load OpenGL functions
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        throw Exception("Failed to initialize GLAD");
+        throw -1;
     }
 
     // Set the viewport size
-    int width, height;
+    int width  = NAN;
+    int height = NAN;
     glfwGetFramebufferSize(window.getWindow(), &width, &height);
     glViewport(0, 0, width, height);
 }
@@ -32,7 +36,7 @@ Renderer3D::Renderer3D()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     // Load the meshes
-    meshLoader.LoadAllMeshes();
+    meshLoader.loadAllChessMeshes();
 
     std::filesystem::path ressources_path = "C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res";
     // Load the shaders
@@ -43,18 +47,47 @@ Renderer3D::Renderer3D()
 
     shaderProgramPtr->link();
 
-    Object object(
-        Transform(),
-        meshLoader.getMesh("knight"),
-        shaderProgramPtr.get(),
-        nullptr
+    window.setOnKeyPress(
+        [this](int key) {
+            switch (key)
+            {
+            case GLFW_KEY_ESCAPE:
+                window.shouldClose(); // Close the window
+                break;
+            case GLFW_KEY_UP:
+                scene.getCamera().move({0.0f, 0.1f, 0.0f});
+                break;
+            case GLFW_KEY_DOWN:
+                scene.getCamera().move({0.0f, -0.1f, 0.0f});
+                break;
+            case GLFW_KEY_LEFT:
+                scene.getCamera().rotate(-5.f, {0.0f, 1.0f, 0.0f});
+                break;
+            case GLFW_KEY_RIGHT:
+                scene.getCamera().rotate(5.f, {0.0f, 1.0f, 0.0f});
+                break;
+            }
+        }
     );
-
-    scene.addObject(object);
 };
 
 void Renderer3D::render(ChessGame& chessGame)
 {
+    scene = Scene::createChessGameScene(chessGame, meshLoader, *shaderProgramPtr);
+
+    // scene.addObject(
+    //     Object(
+    //         Transform(
+    //             glm::vec3(0.f),
+    //             glm::vec3(0.f),
+    //             glm::vec3(1.f)
+    //         ),
+    //         new Mesh(loadMesh("C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res/models/cube.obj")),
+    //         shaderProgramPtr.get(),
+    //         nullptr // TODO(colin): Create texture from piece
+    //     )
+    // );
+
     glEnable(GL_DEPTH_TEST);
     while (!window.shouldClose())
     {
@@ -95,6 +128,11 @@ void Renderer3D::renderScene()
 
 void Renderer3D::renderObject(Object& object)
 {
+    if (!object.getMeshPtr())
+    {
+        return;
+        // throw MeshException("Mesh is not initialized in " + std::string(__FUNCTION__));
+    }
     glBindVertexArray(object.getMeshPtr()->getVAO());
     // Draw the model
     glDrawElements(GL_TRIANGLES, object.getMeshPtr()->getIndicesSize(), GL_UNSIGNED_SHORT, 0);
