@@ -5,7 +5,9 @@
 class Knight : public Piece {
 public:
     Knight(Color color, ChessTile* tile)
-        : Piece(color, tile) {}
+        : Piece(color, tile)
+    {
+        _type = PieceType::KNIGHT;
+    }
     std::vector<ChessTile*> getPossibleMoves() override;
-    char                    getSymbol() override { return 'K'; }
 };

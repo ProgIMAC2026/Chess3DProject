@@ -3,11 +3,13 @@
 #include <vector>
 #include "../chessboard/ChessTile.hpp"
 #include "Color.hpp"
+#include "PieceType.hpp"
 
 // Abstract Piece class
 class Piece {
 protected:
     Color      _color;
+    PieceType  _type;
     ChessTile* _currentTilePtr;
 
     void setTile(ChessTile* tile)
@@ -26,7 +28,8 @@ public:
     virtual std::vector<ChessTile*> getPossibleMoves() = 0;
     virtual PositionTile            getPosition() { return _currentTilePtr->getPosition(); }
 
-    void moveTo(ChessTile* newTile) { setTile(newTile); }
+    virtual Color     getColor() { return _color; }
+    virtual PieceType getType() { return _type; }
 
-    virtual char getSymbol() { return 'P'; }
+    void moveTo(ChessTile* newTile) { setTile(newTile); }
 };
