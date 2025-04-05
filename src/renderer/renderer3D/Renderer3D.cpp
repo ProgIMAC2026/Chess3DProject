@@ -36,7 +36,7 @@ Renderer3D::Renderer3D()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     // Load the meshes
-    meshLoader.loadAllChessMeshes();
+    meshLoader.loadAllMeshes();
 
     std::filesystem::path ressources_path = "C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res";
     // Load the shaders

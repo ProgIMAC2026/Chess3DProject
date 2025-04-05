@@ -2,27 +2,43 @@
 #include "MeshLoading.hpp"
 #include "chessgame/piece/PieceType.hpp"
 
-void MeshChessLoader::loadChessMesh(PieceType type)
+void MeshChessLoader::loadChessPieceMesh(PieceType type)
 {
-    if (loadedMeshes.find(type) == loadedMeshes.end())
+    if (loadedPiecesMeshes.find(type) == loadedPiecesMeshes.end())
     {
-        loadedMeshes[type] = loadMesh(meshPaths.at(type));
+        loadedPiecesMeshes[type] = loadMesh(meshPiecesPaths.at(type));
     }
 }
 
-void MeshChessLoader::loadAllChessMeshes()
+void MeshChessLoader::loadAllChessPiecesMeshes()
 {
-    for (const auto& [type, path] : meshPaths)
+    for (const auto& [type, path] : meshPiecesPaths)
     {
-        loadChessMesh(type);
+        loadChessPieceMesh(type);
     }
 }
 
-Mesh* MeshChessLoader::getMesh(PieceType type)
+Mesh* MeshChessLoader::getPieceMesh(PieceType type)
 {
-    if (loadedMeshes.find(type) != loadedMeshes.end())
+    if (loadedPiecesMeshes.find(type) != loadedPiecesMeshes.end())
     {
-        return &loadedMeshes[type];
+        return &loadedPiecesMeshes[type];
     }
     return nullptr;
+}
+
+Mesh* MeshChessLoader::getBoardMesh()
+{
+    return &loadedBoardMesh;
+}
+
+void MeshChessLoader::loadBoardMesh()
+{
+    loadedBoardMesh = loadMesh(meshBoardPath);
+}
+
+void MeshChessLoader::loadAllMeshes()
+{
+    loadAllChessPiecesMeshes();
+    loadBoardMesh();
 }
