@@ -21,3 +21,8 @@ void Camera::rotate(float angle, glm::vec3 axis)
     params.position = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis) * glm::vec4(params.position, 1.0f);
     params.target   = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis) * glm::vec4(params.target, 1.0f);
 }
+
+void Camera::updateProjectionMatrix(int width, int height)
+{
+    params.aspect = (float)width / (float)height;
+}

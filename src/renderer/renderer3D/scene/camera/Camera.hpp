@@ -25,4 +25,6 @@ public:
     void move(glm::vec3 direction);
 
     void rotate(float angle, glm::vec3 axis);
+
+    void updateProjectionMatrix(int width, int height);
 };
