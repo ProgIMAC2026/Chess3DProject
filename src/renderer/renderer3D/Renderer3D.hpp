@@ -10,7 +10,6 @@
 #include "shader/ShaderProgram.hpp"
 #include "window/Window.hpp"
 
-
 class Renderer3D : public Renderer {
 private:
     Scene  scene;
@@ -29,4 +28,7 @@ public:
 
     void renderScene();
     void renderObject(Object& object);
+
+    void renderLights(std::vector<Light>& light);
+    void renderMaterial();
 };

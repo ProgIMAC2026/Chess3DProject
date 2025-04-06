@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include "GLFW/glfw3.h"
+#include "lib/glm/fwd.hpp"
 #include "loader/meshLoading.hpp"
 #include "renderer/renderer3D/shader/ShaderProgram.hpp"
 #include "scene/Scene.hpp"
@@ -32,7 +33,7 @@ void Renderer3D::initGlad()
 }
 
 Renderer3D::Renderer3D()
-    : scene(), window(1000, 1000), shaderProgramPtr(nullptr)
+    : scene(), window(1000, 800), shaderProgramPtr(nullptr)
 {
     initGlad();
 
@@ -101,30 +102,16 @@ void Renderer3D::renderScene()
 
     // Set the view and projection matrices
     glUseProgram(shaderProgramPtr->getId());
+
+    scene.getCamera().updateProjectionMatrix(window.getWidth(), window.getHeight());
+
     shaderProgramPtr->uniformMatrix4fv("viewMatrix", glm::value_ptr(scene.getCamera().getViewMatrix()));
     shaderProgramPtr->uniformMatrix4fv("projectionMatrix", glm::value_ptr(scene.getCamera().getProjectionMatrix()));
 
     // Set Material properties
-    shaderProgramPtr->uniform1i("material.diffuse", 0);
-    shaderProgramPtr->uniform1i("material.specular", 1);
-    shaderProgramPtr->uniform1f("material.shininess", 32.0f);
+    renderMaterial();
 
-    // Set Light properties
-    shaderProgramPtr->uniform1i("lightCount", scene.getLights().size());
-
-    for (size_t i{0}; i < scene.getLights().size(); ++i)
-    {
-        const Light& light      = scene.getLights()[i];
-        std::string  lightIndex = std::to_string(i);
-
-        shaderProgramPtr->uniform3fv(("lights[" + lightIndex + "].position").c_str(), glm::value_ptr(light.getTransform()._position));
-        shaderProgramPtr->uniform3fv(("lights[" + lightIndex + "].ambient").c_str(), glm::value_ptr(light.getAmbient()));
-        shaderProgramPtr->uniform3fv(("lights[" + lightIndex + "].diffuse").c_str(), glm::value_ptr(light.getDiffuse()));
-        shaderProgramPtr->uniform3fv(("lights[" + lightIndex + "].specular").c_str(), glm::value_ptr(light.getSpecular()));
-        shaderProgramPtr->uniform1f(("lights[" + lightIndex + "].constant").c_str(), light.getConstantAttenuation());
-        shaderProgramPtr->uniform1f(("lights[" + lightIndex + "].linear").c_str(), light.getLinearAttenuation());
-        shaderProgramPtr->uniform1f(("lights[" + lightIndex + "].quadratic").c_str(), light.getQuadraticAttenuation());
-    }
+    renderLights(scene.getLights());
 
     // Set the camera position
     shaderProgramPtr->uniform3fv("viewPos", glm::value_ptr(scene.getCamera().getPosition()));
@@ -149,4 +136,31 @@ void Renderer3D::renderObject(Object& object)
     glDrawElements(GL_TRIANGLES, object.getMeshPtr()->getIndicesSize(), GL_UNSIGNED_SHORT, 0);
     // Unbind the VAO
     glBindVertexArray(0);
+}
+
+void Renderer3D::renderLights(std::vector<Light>& lights)
+{
+    // Set Light properties
+    shaderProgramPtr->uniform1i("lightCount", lights.size());
+
+    for (size_t i{0}; i < lights.size(); ++i)
+    {
+        const Light& light      = lights[i];
+        std::string  lightIndex = std::to_string(i);
+
+        shaderProgramPtr->uniform3fv(("lights[" + lightIndex + "].position").c_str(), glm::value_ptr(light.getTransform()._position));
+        shaderProgramPtr->uniform3fv(("lights[" + lightIndex + "].ambient").c_str(), glm::value_ptr(light.getAmbient()));
+        shaderProgramPtr->uniform3fv(("lights[" + lightIndex + "].diffuse").c_str(), glm::value_ptr(light.getDiffuse()));
+        shaderProgramPtr->uniform3fv(("lights[" + lightIndex + "].specular").c_str(), glm::value_ptr(light.getSpecular()));
+        shaderProgramPtr->uniform1f(("lights[" + lightIndex + "].constant").c_str(), light.getConstantAttenuation());
+        shaderProgramPtr->uniform1f(("lights[" + lightIndex + "].linear").c_str(), light.getLinearAttenuation());
+        shaderProgramPtr->uniform1f(("lights[" + lightIndex + "].quadratic").c_str(), light.getQuadraticAttenuation());
+    }
+}
+
+void Renderer3D::renderMaterial()
+{
+    shaderProgramPtr->uniform1i("material.diffuse", 0);
+    shaderProgramPtr->uniform1i("material.specular", 1);
+    shaderProgramPtr->uniform1f("material.shininess", 32.0f);
 }
