@@ -29,6 +29,6 @@ public:
     void renderScene();
     void renderObject(Object& object);
 
-    void renderLights(std::vector<Light>& light);
-    void renderMaterial();
+    void renderLights(std::vector<Light>& lights);
+    void renderMaterial(Material& material);
 };

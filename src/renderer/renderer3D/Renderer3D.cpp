@@ -108,9 +108,6 @@ void Renderer3D::renderScene()
     shaderProgramPtr->uniformMatrix4fv("viewMatrix", glm::value_ptr(scene.getCamera().getViewMatrix()));
     shaderProgramPtr->uniformMatrix4fv("projectionMatrix", glm::value_ptr(scene.getCamera().getProjectionMatrix()));
 
-    // Set Material properties
-    renderMaterial();
-
     renderLights(scene.getLights());
 
     // Set the camera position
@@ -119,6 +116,9 @@ void Renderer3D::renderScene()
     // Render each object in the scene
     for (Object& obj : scene.getObjects())
     {
+        // Set Material properties
+        renderMaterial(obj.getMaterial());
+
         shaderProgramPtr->uniformMatrix4fv("modelMatrix", glm::value_ptr(obj.getModelMatrix()));
         renderObject(obj);
     }
@@ -158,9 +158,10 @@ void Renderer3D::renderLights(std::vector<Light>& lights)
     }
 }
 
-void Renderer3D::renderMaterial()
+void Renderer3D::renderMaterial(Material& material)
 {
-    shaderProgramPtr->uniform1i("material.diffuse", 0);
-    shaderProgramPtr->uniform1i("material.specular", 1);
-    shaderProgramPtr->uniform1f("material.shininess", 32.0f);
+    shaderProgramPtr->uniform3fv("material.ambient", glm::value_ptr(material.getAmbient()));
+    shaderProgramPtr->uniform3fv("material.diffuse", glm::value_ptr(material.getDiffuse()));
+    shaderProgramPtr->uniform3fv("material.specular", glm::value_ptr(material.getSpecular()));
+    shaderProgramPtr->uniform1f("material.shininess", material.getShininess());
 }
