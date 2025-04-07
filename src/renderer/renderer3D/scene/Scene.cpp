@@ -1,7 +1,10 @@
 #include "Scene.hpp"
 #include <vector>
+#include "chessgame/piece/Color.hpp"
 #include "chessgame/piece/Piece.hpp"
+#include "chessgame/piece/PieceType.hpp"
 #include "light/Light.hpp"
+#include "material/Material.hpp"
 #include "utils/Transform.hpp"
 
 void Scene::addObject(Object object)
@@ -44,7 +47,12 @@ Scene Scene::createChessGameScene(ChessGame& chessGame, MeshChessLoader& meshLoa
             ),
             meshLoader.getPieceMesh(piece->getType()),
             &shaderProgram,
-            nullptr // TODO(colin): Create texture from piece
+            Material(
+                piece->getColor() == Color::WHITE ? glm::vec3(1.f, 1.f, 1.f) : glm::vec3(0.f, 0.f, 0.f),
+                glm::vec3(0.4f),
+                glm::vec3(0.2f),
+                5.f
+            )
         );
 
         scene.addObject(object);
@@ -59,23 +67,28 @@ Scene Scene::createChessGameScene(ChessGame& chessGame, MeshChessLoader& meshLoa
         ),
         meshLoader.getBoardMesh(),
         &shaderProgram,
-        nullptr // TODO(colin): Create texture from board
+        Material(
+            glm::vec3(1.f, 1.f, 1.f),
+            glm::vec3(2.f),
+            glm::vec3(1.f),
+            10.f
+        )
     );
 
     scene.addObject(boardObject);
 
     Light light1(
         Transform(
-            glm::vec3(-1.f, 1.f, 0.f),
+            glm::vec3(1.f, 1.f, 1.f),
             glm::vec3(0.f),
             glm::vec3(1.f)
         ),
-        glm::vec3(0.f, 0.2f, 0.f)
+        glm::vec3(1.f, 1.f, 1.f)
     );
 
     Light light2(
         Transform(
-            glm::vec3(1.f, 1.f, 0.f),
+            glm::vec3(-1.f, 1.f, -1.f),
             glm::vec3(0.f),
             glm::vec3(1.f)
         ),
