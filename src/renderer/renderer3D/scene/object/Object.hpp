@@ -2,7 +2,7 @@
 
 #include <lib/glm/glm.hpp>
 #include "../../shader/ShaderProgram.hpp"
-#include "../texture/Texture.hpp"
+#include "../material/Material.hpp"
 #include "../utils/Transform.hpp"
 #include "Mesh.hpp"
 
@@ -11,14 +11,17 @@ class Object {
 
     Mesh*          meshPtr;
     ShaderProgram* shaderProgram;
-    Texture*       texture;
+    Material       material;
 
 public:
     Object() = default;
-    Object(const Transform& transform, Mesh* meshPtr, ShaderProgram* shaderProgram, Texture* texture);
+    Object(const Transform& transform, Mesh* meshPtr, ShaderProgram* shaderProgram, Material material);
     // Getter Setter
-    Transform getTransform() const { return transform; }
-    void      setTransform(const Transform& transform) { this->transform = transform; }
+    Transform getTransform() const
+    {
+        return transform;
+    }
+    void setTransform(const Transform& transform) { this->transform = transform; }
 
     Mesh* getMeshPtr() const { return meshPtr; }
     void  setMeshPtr(Mesh* meshPtr);
@@ -26,8 +29,8 @@ public:
     ShaderProgram* getShaderProgram() const;
     void           setShaderProgram(ShaderProgram* shaderProgram);
 
-    Texture* getTexture() const;
-    void     setTexture(Texture* texture);
+    Material& getMaterial() { return material; }
+    void      setMaterial(const Material& material) { this->material = material; }
 
     glm::mat4 getModelMatrix() const { return transform.getModelMatrix(); }
 
