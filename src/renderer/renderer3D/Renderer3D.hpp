@@ -1,5 +1,6 @@
 #pragma once
 
+#include "picker/Picker.hpp"
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -14,6 +15,7 @@ class Renderer3D : public Renderer {
 private:
     Scene  scene;
     Window window;
+    Picker picker;
 
     std::unique_ptr<ShaderProgram> shaderProgramPtr;
     MeshChessLoader                meshLoader;
@@ -31,4 +33,6 @@ public:
 
     void renderLights(std::vector<Light>& lights);
     void renderMaterial(Material& material);
+
+    void renderPickingScene();
 };

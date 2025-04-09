@@ -1,15 +1,13 @@
 #include "Renderer3D.hpp"
-#include <charconv>
 #include <cmath>
 #include <filesystem>
-#include <format>
 #include <iostream>
 #include <lib/glm/ext.hpp>
 #include <memory>
 #include <string>
 #include "GLFW/glfw3.h"
 #include "lib/glm/fwd.hpp"
-#include "loader/meshLoading.hpp"
+#include "picker/Picker.hpp"
 #include "renderer/renderer3D/shader/ShaderProgram.hpp"
 #include "scene/Scene.hpp"
 #include "scene/light/Light.hpp"
@@ -33,7 +31,7 @@ void Renderer3D::initGlad()
 }
 
 Renderer3D::Renderer3D()
-    : scene(), window(1000, 800), shaderProgramPtr(nullptr)
+    : scene(), window(1000, 800), shaderProgramPtr(nullptr), picker(1000, 800)
 {
     initGlad();
 
@@ -51,6 +49,15 @@ Renderer3D::Renderer3D()
     );
 
     shaderProgramPtr->link();
+
+    // Initialize the picker
+    picker.setShaderProgram(std::make_unique<ShaderProgram>(
+        ressources_path / "shaders" / "picking.vs.glsl",
+        ressources_path / "shaders" / "picking.fs.glsl"
+    ));
+
+    picker.getShaderProgram().link();
+    picker.init();
 
     window.setOnKeyPress(
         [this](int key) {
@@ -74,6 +81,41 @@ Renderer3D::Renderer3D()
             }
         }
     );
+
+    window.setOnSizeChange(
+        [this](int width, int height) {
+            // Update the viewport size
+            glViewport(0, 0, width, height);
+            scene.getCamera().updateProjectionMatrix(width, height);
+            picker.setWidth(width);
+            picker.setHeight(height);
+        }
+    );
+
+    window.setOnMouseClick(
+        [this](int button, int action, int mods, double xpos, double ypos) {
+            if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+            {
+                std::cout << "Mouse clicked at (" << (xpos + 1) / 2 * window.getWidth() << ", " << (ypos + 1) / 2 * window.getHeight() << ")" << std::endl;
+                std::cout << "Object index: " << picker.getObjectIndex((xpos + 1) / 2 * window.getWidth(), (ypos + 1) / 2 * window.getHeight()) << std::endl;
+
+                // Get the object index at the mouse position
+                int objectIndex = picker.getObjectIndex((xpos + 1) / 2 * window.getWidth(), (ypos + 1) / 2 * window.getHeight());
+                if (objectIndex >= 0 && objectIndex < scene.getObjects().size())
+                {
+                    // Get the object from the scene using the index
+
+                    Object& obj = scene.getObjects()[objectIndex];
+                    obj.setMaterial(Material(
+                        glm::vec3(1.0f, 0.0f, 0.0f), // Ambient color
+                        glm::vec3(1.0f, 0.0f, 0.0f), // Diffuse color
+                        glm::vec3(1.0f, 1.0f, 1.0f), // Specular color
+                        32.0f                        // Shininess
+                    ));
+                }
+            }
+        }
+    );
 };
 
 void Renderer3D::render(ChessGame& chessGame)
@@ -86,8 +128,13 @@ void Renderer3D::render(ChessGame& chessGame)
         window.pollEvents();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Render the scene
         renderScene();
 
+        renderPickingScene();
+
+        // Swap the buffers to display the rendered image
         window.swapBuffers();
     }
 };
@@ -164,4 +211,28 @@ void Renderer3D::renderMaterial(Material& material)
     shaderProgramPtr->uniform3fv("material.diffuse", glm::value_ptr(material.getDiffuse()));
     shaderProgramPtr->uniform3fv("material.specular", glm::value_ptr(material.getSpecular()));
     shaderProgramPtr->uniform1f("material.shininess", material.getShininess());
+}
+
+void Renderer3D::renderPickingScene()
+{
+    // Render the picker
+    picker.bind();
+    picker.useShaderProgram();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+
+    picker.getShaderProgram().uniformMatrix4fv("viewMatrix", glm::value_ptr(scene.getCamera().getViewMatrix()));
+    picker.getShaderProgram().uniformMatrix4fv("projectionMatrix", glm::value_ptr(scene.getCamera().getProjectionMatrix()));
+
+    for (size_t i{0}; i < scene.getObjects().size(); ++i)
+    {
+        Object& obj = scene.getObjects()[i];
+        // Set Material properties
+        picker.getShaderProgram().uniformMatrix4fv("modelMatrix", glm::value_ptr(obj.getModelMatrix()));
+        picker.getShaderProgram().uniform1f("gObjectIndex", (i + 1) / 255.0f);
+        renderObject(obj);
+    }
+
+    picker.unbind();
 }
