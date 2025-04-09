@@ -1,5 +1,6 @@
 #include "MeshLoading.hpp"
 #include <tiny_obj_loader.h>
+#include "utils/errors/Exception.hpp"
 
 Mesh loadMesh(const std::filesystem::path& filepath)
 {
@@ -14,7 +15,7 @@ Mesh loadMesh(const std::filesystem::path& filepath)
 
     if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.generic_string().c_str(), nullptr, true))
     {
-        throw -1;
+        throw MeshLoadException("Failed to load mesh: " + err);
     }
 
     // Loop over shapes

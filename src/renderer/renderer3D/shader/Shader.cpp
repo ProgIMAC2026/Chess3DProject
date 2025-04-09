@@ -18,9 +18,9 @@ void Shader::readShaderSource(const std::filesystem::path& filePath)
     std::string   text;
     std::ifstream in(filePath);
     if (!in.is_open())
-        throw -1;
+        throw ShaderException{"Failed to open shader file: " + filePath.string()};
     if (!in.good())
-        throw -1;
+        throw ShaderException{"Failed to read shader file: " + filePath.string()};
 
     while (std::getline(in, line))
     {

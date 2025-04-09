@@ -22,7 +22,7 @@ void Renderer3D::initGlad()
     // Initialize GLAD to load OpenGL functions
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        throw -1;
+        throw RenderException("Failed to initialize GLAD in " + std::string(__FUNCTION__));
     }
 
     // Set the viewport size

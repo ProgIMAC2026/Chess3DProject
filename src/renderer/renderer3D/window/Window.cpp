@@ -2,20 +2,21 @@
 #include "Window.hpp"
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
+#include "utils/errors/Exception.hpp"
 
 Window::Window(int width, int height)
     : _width(width), _height(height)
 {
     if (!glfwInit())
     {
-        throw -1; // Initialization failed
+        throw WindowException("Failed to initialize GLFW"); // Initialization failed
     }
 
     window = glfwCreateWindow(_width, _height, _title, nullptr, nullptr);
     if (!window)
     {
         glfwTerminate();
-        throw -1; // Window creation failed
+        throw WindowException("Failed to create GLFW window"); // Window creation failed
     }
 
     glfwMakeContextCurrent(window);
