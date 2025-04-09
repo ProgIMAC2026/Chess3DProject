@@ -65,3 +65,10 @@ public:
     explicit RenderException(std::string message)
         : Exception(std::move(message)) {}
 };
+
+// CameraException
+class CameraException : public Exception {
+    public:
+    explicit CameraException(std::string message)
+        : Exception(std::move(message)) {}
+};
