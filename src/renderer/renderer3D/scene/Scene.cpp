@@ -9,33 +9,38 @@
 
 void Scene::addObject(Object object)
 {
-    objects.push_back(object);
+    _objects.push_back(object);
 }
 
 void Scene::addLight(const Light& light)
 {
-    lights.push_back(light);
+    _lights.push_back(light);
 }
 
 std::vector<Object>& Scene::getObjects()
 {
-    return objects;
+    return _objects;
 }
 
 std::vector<Light>& Scene::getLights()
 {
-    return lights;
+    return _lights;
 }
 
-Camera& Scene::getCamera()
+TargetCamera& Scene::getTargetCamera()
 {
-    return camera;
+    return _targetCamera;
+}
+
+PointOfViewCamera& Scene::getPointOfViewCamera()
+{
+    return _pointOfViewCamera;
 }
 
 Scene Scene::createChessGameScene(ChessGame& chessGame, MeshChessLoader& meshLoader, ShaderProgram& shaderProgram)
 {
     std::vector<Piece*> pieces = chessGame.getChessBoard().getPieces();
-    Scene               scene;
+    Scene scene;
     for (Piece* piece : pieces)
     {
         // Create object from piece

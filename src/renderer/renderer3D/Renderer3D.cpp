@@ -67,16 +67,22 @@ Renderer3D::Renderer3D()
                 window.shouldClose(); // Close the window
                 break;
             case GLFW_KEY_UP:
-                scene.getCamera().move({0.0f, 0.1f, 0.0f});
+                scene.getCurrentCamera()->rotate(5.f, glm::vec3(1.f, 0.f, 0.f));
                 break;
             case GLFW_KEY_DOWN:
-                scene.getCamera().move({0.0f, -0.1f, 0.0f});
+                scene.getCurrentCamera()->rotate(-5.f, glm::vec3(1.f, 0.f, 0.f));
                 break;
             case GLFW_KEY_LEFT:
-                scene.getCamera().rotate(-5.f, {0.0f, 1.0f, 0.0f});
+                scene.getCurrentCamera()->rotate(5.f, glm::vec3(0.f, 1.f, 0.f));
                 break;
             case GLFW_KEY_RIGHT:
-                scene.getCamera().rotate(5.f, {0.0f, 1.0f, 0.0f});
+                scene.getCurrentCamera()->rotate(-5.f, glm::vec3(0.f, 1.f, 0.f));
+                break;
+            case GLFW_KEY_P:
+                scene.setCurrentCameraToPointOfViewCamera();
+                break;
+            case GLFW_KEY_T:
+                scene.setCurrentCameraToTargetCamera();
                 break;
             }
         }
@@ -86,7 +92,12 @@ Renderer3D::Renderer3D()
         [this](int width, int height) {
             // Update the viewport size
             glViewport(0, 0, width, height);
-            scene.getCamera().updateProjectionMatrix(width, height);
+            Camera* camera = scene.getCurrentCamera();
+            if (!camera)
+            {
+                throw CameraException("Camera is not initialized in " + std::string(__FUNCTION__));
+            }
+            camera->updateAspectRatio(width, height);
             picker.setWidth(width);
             picker.setHeight(height);
         }
@@ -96,9 +107,6 @@ Renderer3D::Renderer3D()
         [this](int button, int action, int mods, double xpos, double ypos) {
             if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
             {
-                std::cout << "Mouse clicked at (" << (xpos + 1) / 2 * window.getWidth() << ", " << (ypos + 1) / 2 * window.getHeight() << ")" << std::endl;
-                std::cout << "Object index: " << picker.getObjectIndex((xpos + 1) / 2 * window.getWidth(), (ypos + 1) / 2 * window.getHeight()) << std::endl;
-
                 // Get the object index at the mouse position
                 int objectIndex = picker.getObjectIndex((xpos + 1) / 2 * window.getWidth(), (ypos + 1) / 2 * window.getHeight());
                 if (objectIndex >= 0 && objectIndex < scene.getObjects().size())
@@ -121,6 +129,7 @@ Renderer3D::Renderer3D()
 void Renderer3D::render(ChessGame& chessGame)
 {
     scene = Scene::createChessGameScene(chessGame, meshLoader, *shaderProgramPtr);
+    scene.setCurrentCameraToTargetCamera();
 
     glEnable(GL_DEPTH_TEST);
     while (!window.shouldClose())
@@ -150,15 +159,22 @@ void Renderer3D::renderScene()
     // Set the view and projection matrices
     glUseProgram(shaderProgramPtr->getId());
 
-    scene.getCamera().updateProjectionMatrix(window.getWidth(), window.getHeight());
+    Camera* camera = scene.getCurrentCamera();
 
-    shaderProgramPtr->uniformMatrix4fv("viewMatrix", glm::value_ptr(scene.getCamera().getViewMatrix()));
-    shaderProgramPtr->uniformMatrix4fv("projectionMatrix", glm::value_ptr(scene.getCamera().getProjectionMatrix()));
+    if (!camera)
+    {
+        throw CameraException("Camera is not initialized in " + std::string(__FUNCTION__));
+    }
+
+    camera->updateAspectRatio(window.getWidth(), window.getHeight());
+
+    shaderProgramPtr->uniformMatrix4fv("viewMatrix", glm::value_ptr(camera->getViewMatrix()));
+    shaderProgramPtr->uniformMatrix4fv("projectionMatrix", glm::value_ptr(camera->getProjectionMatrix()));
 
     renderLights(scene.getLights());
 
-    // Set the camera position
-    shaderProgramPtr->uniform3fv("viewPos", glm::value_ptr(scene.getCamera().getPosition()));
+    // Set the targetCamera position
+    shaderProgramPtr->uniform3fv("viewPos", glm::value_ptr(camera->getPosition()));
 
     // Render each object in the scene
     for (Object& obj : scene.getObjects())
@@ -222,8 +238,8 @@ void Renderer3D::renderPickingScene()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    picker.getShaderProgram().uniformMatrix4fv("viewMatrix", glm::value_ptr(scene.getCamera().getViewMatrix()));
-    picker.getShaderProgram().uniformMatrix4fv("projectionMatrix", glm::value_ptr(scene.getCamera().getProjectionMatrix()));
+    picker.getShaderProgram().uniformMatrix4fv("viewMatrix", glm::value_ptr(scene.getCurrentCamera()->getViewMatrix()));
+    picker.getShaderProgram().uniformMatrix4fv("projectionMatrix", glm::value_ptr(scene.getCurrentCamera()->getProjectionMatrix()));
 
     for (size_t i{0}; i < scene.getObjects().size(); ++i)
     {

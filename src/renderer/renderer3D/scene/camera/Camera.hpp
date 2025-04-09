@@ -2,29 +2,80 @@
 #include <lib/glm/glm.hpp>
 
 struct CameraParameters {
-    glm::vec3 position;
-    glm::vec3 target;
-    glm::vec3 up;
-    float     fov;
-    float     aspect;
-    float     near;
-    float     far;
+    float fov;
+    float nearPlane;
+    float farPlane;
+    float aspectRatio;
 };
 
 class Camera {
+protected:
     CameraParameters params;
 
 public:
     explicit Camera(CameraParameters params)
         : params(params) {};
 
-    glm::mat4 getViewMatrix() const;
-    glm::mat4 getProjectionMatrix() const;
-    glm::vec3 getPosition() const { return params.position; }
+    virtual glm::vec3 getPosition() const = 0;
+    virtual glm::mat4 getViewMatrix() const = 0;
+    virtual glm::mat4 getProjectionMatrix() const = 0;
 
-    void move(glm::vec3 direction);
+    void updateAspectRatio(int width, int height);
 
-    void rotate(float angle, glm::vec3 axis);
+    virtual void rotate(float angle, glm::vec3 axis) = 0;
+};
 
-    void updateProjectionMatrix(int width, int height);
+class TargetCamera : public Camera {
+    glm::vec3 targetPosition;
+    float distanceToTarget;
+
+    float angleAroundVerticalAxis;
+    float angleAroundHorizontalAxis;
+public:
+    explicit TargetCamera();
+    explicit TargetCamera(CameraParameters params, glm::vec3 targetPosition, float distanceToTarget , float angleAroundVerticalAxis, float angleAroundHorizontalAxis )
+        : Camera(params) {};
+
+    // Setters
+    void setTargetPosition(glm::vec3 targetPosition);
+    void setDistanceToTarget(float distanceToTarget);
+    void setAngleAroundVerticalAxis(float angle);
+    void setAngleAroundHorizontalAxis(float angle);
+
+    // Getters
+    glm::vec3 getTargetPosition() const { return targetPosition; }
+    float getDistanceToTarget() const { return distanceToTarget; }
+    float getAngleAroundVerticalAxis() const { return angleAroundVerticalAxis; }
+    float getAngleAroundHorizontalAxis() const { return angleAroundHorizontalAxis; }
+
+    // Override
+    glm::vec3 getPosition() const override;
+    glm::mat4 getViewMatrix() const override;
+    glm::mat4 getProjectionMatrix() const override;
+
+    // Movement methods
+    void rotate(float angle, glm::vec3 axis) override;
+    void rotateAroundTarget(float angle, glm::vec3 axis);
+};
+
+class PointOfViewCamera : public Camera {
+
+    glm::vec3 position;
+    glm::vec3 rotation; // Euler angles in radians
+
+public:
+    explicit PointOfViewCamera();
+    explicit PointOfViewCamera(CameraParameters params, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f))
+        : Camera(params) {};
+
+
+    // Override
+    glm::vec3 getPosition() const override;
+    glm::mat4 getViewMatrix() const override;
+    glm::mat4 getProjectionMatrix() const override;
+
+    // Movement methods
+    void rotate(float angle, glm::vec3 axis) override;
+    void setPosition(glm::vec3 position);
+    void setRotation(glm::vec3 rotation); // Euler angles in radians
 };

@@ -10,23 +10,34 @@
 #include "renderer/renderer3D/shader/ShaderProgram.hpp"
 
 class Scene {
-    std::vector<Object> objects;
-    std::vector<Light>  lights;
-    Camera              camera;
-    glm::mat4           modelMatrix = glm::mat4(1.0f);
+    std::vector<Object> _objects;
+    std::vector<Light>  _lights;
+    TargetCamera        _targetCamera;
+    PointOfViewCamera   _pointOfViewCamera;
+    glm::mat4           modelMatrix;
+
+    Camera* currentCamera;
+
 
 public:
     Scene()
-        : camera(CameraParameters{.position = glm::vec3(1.2f, 0.5f, 1.2f), .target = glm::vec3(0.f, 0.f, 0.f), .up = glm::vec3(0.f, 1.f, 0.f), .fov = 45.f, .aspect = 800.f / 600.f, .near = 0.1f, .far = 100.f}) {};
+        : _targetCamera(), _pointOfViewCamera(), modelMatrix(1.0f), currentCamera(&_targetCamera)  {};
 
-    Scene(std::vector<Object> objects, std::vector<Light> lights, Camera camera)
-        : objects(std::move(objects)), lights(std::move(lights)), camera(camera) {};
+    Scene(std::vector<Object> objects, std::vector<Light> lights)
+        : _objects(std::move(objects)), _lights(std::move(lights)), _targetCamera(), _pointOfViewCamera(), modelMatrix(1.0f), currentCamera(&_targetCamera) {};
+
 
     // Getters
     std::vector<Object>& getObjects();
     std::vector<Light>&  getLights();
 
-    Camera& getCamera();
+    TargetCamera& getTargetCamera();
+    PointOfViewCamera& getPointOfViewCamera();
+
+    Camera* getCurrentCamera() { return currentCamera; }
+
+    void setCurrentCameraToTargetCamera() { currentCamera = &_targetCamera; }
+    void setCurrentCameraToPointOfViewCamera() { currentCamera = &_pointOfViewCamera; }
 
     glm::mat4 getModelMatrix() const { return modelMatrix; }
 
