@@ -47,6 +47,7 @@ public:
 
     // Create scene from chessgame
     static Scene createChessGameScene(ChessGame& chessGame, MeshChessLoader& meshLoader, ShaderProgram& shaderProgram);
+    static void createChessBoard(MeshChessLoader& meshLoader, ShaderProgram& shaderProgram, Scene& scene);
 
     // Convert PositionTile to 3D position
     static glm::vec3 positionTileTo3DPosition(const PositionTile& positionTile);

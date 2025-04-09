@@ -31,7 +31,7 @@ void Renderer3D::initGlad()
 }
 
 Renderer3D::Renderer3D()
-    : scene(), window(1000, 800), shaderProgramPtr(nullptr), picker(1000, 800), meshLoader(std::filesystem::absolute(std::filesystem::current_path() / "../..") / "res")
+    : scene(), window(1400, 1200), shaderProgramPtr(nullptr), picker(1400, 1200), meshLoader(std::filesystem::absolute(std::filesystem::current_path() / "../..") / "res")
 {
     initGlad();
 
