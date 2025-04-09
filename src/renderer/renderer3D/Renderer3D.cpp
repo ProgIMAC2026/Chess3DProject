@@ -31,7 +31,7 @@ void Renderer3D::initGlad()
 }
 
 Renderer3D::Renderer3D()
-    : scene(), window(1000, 800), shaderProgramPtr(nullptr), picker(1000, 800)
+    : scene(), window(1000, 800), shaderProgramPtr(nullptr), picker(1000, 800), meshLoader(std::filesystem::absolute(std::filesystem::current_path() / "../..") / "res")
 {
     initGlad();
 
@@ -41,7 +41,7 @@ Renderer3D::Renderer3D()
     // Load the meshes
     meshLoader.loadAllMeshes();
 
-    std::filesystem::path ressources_path = "C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res";
+    std::filesystem::path ressources_path = std::filesystem::absolute(std::filesystem::current_path() / "../..") / "res";
     // Load the shaders
     shaderProgramPtr = std::make_unique<ShaderProgram>(
         ressources_path / "shaders" / "vertex.glsl",

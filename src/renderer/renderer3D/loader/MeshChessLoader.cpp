@@ -2,11 +2,13 @@
 #include "MeshLoading.hpp"
 #include "chessgame/piece/PieceType.hpp"
 
+MeshChessLoader::MeshChessLoader(std::filesystem::path ressourcePath) : ressourcePath(ressourcePath){}
+
 void MeshChessLoader::loadChessPieceMesh(PieceType type)
 {
     if (loadedPiecesMeshes.find(type) == loadedPiecesMeshes.end())
     {
-        loadedPiecesMeshes[type] = loadMesh(meshPiecesPaths.at(type));
+        loadedPiecesMeshes[type] = loadMesh(ressourcePath / meshPiecesPaths.at(type));
     }
 }
 
@@ -34,7 +36,7 @@ Mesh* MeshChessLoader::getBoardMesh()
 
 void MeshChessLoader::loadBoardMesh()
 {
-    loadedBoardMesh = loadMesh(meshBoardPath);
+    loadedBoardMesh = loadMesh(ressourcePath / meshBoardPath);
 }
 
 void MeshChessLoader::loadAllMeshes()

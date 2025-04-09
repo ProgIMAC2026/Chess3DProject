@@ -6,23 +6,26 @@
 #include "renderer/renderer3D/scene/object/Mesh.hpp"
 
 class MeshChessLoader {
+
+    std::filesystem::path ressourcePath;
+
     std::unordered_map<PieceType, std::filesystem::path> meshPiecesPaths{
-        {PieceType::KNIGHT, "C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res/models/cavalier.obj"},
-        {PieceType::BISHOP, "C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res/models/fou.obj"},
-        {PieceType::ROOK, "C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res/models/tour.obj"},
-        {PieceType::QUEEN, "C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res/models/reine.obj"},
-        {PieceType::KING, "C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res/models/reine.obj"},
-        {PieceType::PAWN, "C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res/models/pion.obj"},
-        {PieceType::NONE, "C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res/models/pion.obj"}
+        {PieceType::KNIGHT, "models/cavalier.obj"},
+        {PieceType::BISHOP, "models/fou.obj"},
+        {PieceType::ROOK, "models/tour.obj"},
+        {PieceType::QUEEN, "models/reine.obj"},
+        {PieceType::KING, "models/reine.obj"},
+        {PieceType::PAWN, "models/pion.obj"},
+        {PieceType::NONE, "models/pion.obj"}
     };
 
-    std::filesystem::path meshBoardPath = "C:/Users/colin/Desktop/IMAC/IMAC_2/S2/PROG/Chess3DProject/res/models/plateau.obj";
+    std::filesystem::path meshBoardPath = "models/plateau.obj";
 
     std::unordered_map<PieceType, Mesh> loadedPiecesMeshes;
     Mesh                                loadedBoardMesh;
 
 public:
-    MeshChessLoader() = default;
+    MeshChessLoader(std::filesystem::path ressourcePath);
 
     void loadChessPieceMesh(PieceType type);
     void loadAllChessPiecesMeshes();
