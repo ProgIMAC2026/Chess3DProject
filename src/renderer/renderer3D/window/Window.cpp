@@ -24,23 +24,41 @@ Window::Window(int width, int height)
     glfwSetWindowUserPointer(window, this);
 
     auto keyCallback = [](GLFWwindow* w, int key, int scancode, int action, int mods) {
-        auto* window = static_cast<Window*>(glfwGetWindowUserPointer(w));
-        if (window)
+        auto* windowPtr = static_cast<Window*>(glfwGetWindowUserPointer(w));
+        if (windowPtr)
         {
-            window->onKeyPress(w, key, scancode, action, mods); // Call the key press function
+            windowPtr->onKeyPress(w, key, scancode, action, mods); // Call the key press function
         }
     };
+
+    glfwSetKeyCallback(window, keyCallback); // Set the key callback function
 
     auto sizeCallback = [](GLFWwindow* w, int width, int height) {
-        auto* window = static_cast<Window*>(glfwGetWindowUserPointer(w));
-        if (window)
+        auto* windowPtr = static_cast<Window*>(glfwGetWindowUserPointer(w));
+        if (windowPtr)
         {
-            window->onSizeChange(width, height); // Call the size change function
+            windowPtr->onSizeChange(width, height); // Call the size change function
         }
     };
 
-    glfwSetKeyCallback(window, keyCallback);         // Set the key callback function
     glfwSetWindowSizeCallback(window, sizeCallback); // Set the size callback function
+
+    auto mouseCallback = [](GLFWwindow* w, int button, int action, int mods) {
+        auto* windowPtr = static_cast<Window*>(glfwGetWindowUserPointer(w));
+
+        double xpos, ypos;
+        glfwGetCursorPos(windowPtr->getWindow(), &xpos, &ypos);
+        // Convert the mouse position to normalized device coordinates (NDC)
+        double xPos = (2.0 * xpos) / windowPtr->_width - 1.0;
+        double yPos = 1.0 - (2.0 * ypos) / windowPtr->_height; // Invert y coordinate
+
+        if (windowPtr)
+        {
+            windowPtr->onMouseClick(button, action, mods, xPos, yPos); // Call the mouse click function
+        }
+    };
+
+    glfwSetMouseButtonCallback(window, mouseCallback); // Set the mouse click callback function
 }
 
 Window::~Window()
@@ -79,5 +97,17 @@ void Window::onSizeChange(int width, int height)
 {
     _width  = width;
     _height = height;
+    if (_onSizeChange)
+    {
+        _onSizeChange(_width, _height); // Call the size change function
+    }
     glad_glViewport(0, 0, _width, _height); // Set the viewport size
+}
+
+void Window::onMouseClick(int button, int action, int mods, double xpos, double ypos)
+{
+    if (_onMouseClick)
+    {
+        _onMouseClick(button, action, mods, xpos, ypos); // Call the mouse click function
+    }
 }
