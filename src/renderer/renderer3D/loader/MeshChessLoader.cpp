@@ -39,8 +39,19 @@ void MeshChessLoader::loadBoardMesh()
     loadedBoardMesh = loadMesh(ressourcePath / meshBoardPath);
 }
 
+Mesh* MeshChessLoader::getBoardTileMesh()
+{
+    return &loadedBoardTileMesh;
+}
+
+void MeshChessLoader::loadBoardTileMesh()
+{
+    loadedBoardTileMesh = loadMesh(ressourcePath / meshBoardTilePath);
+}
+
 void MeshChessLoader::loadAllMeshes()
 {
     loadAllChessPiecesMeshes();
     loadBoardMesh();
+    loadBoardTileMesh();
 }

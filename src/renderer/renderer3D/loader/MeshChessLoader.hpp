@@ -19,10 +19,12 @@ class MeshChessLoader {
         {PieceType::NONE, "models/pion.obj"}
     };
 
-    std::filesystem::path meshBoardPath = "models/plateau.obj";
+    std::filesystem::path meshBoardPath = "models/fond_plateau.obj";
+    std::filesystem::path meshBoardTilePath = "models/case.obj";
 
     std::unordered_map<PieceType, Mesh> loadedPiecesMeshes;
     Mesh                                loadedBoardMesh;
+    Mesh                                loadedBoardTileMesh;
 
 public:
     MeshChessLoader(std::filesystem::path ressourcePath);
@@ -34,6 +36,9 @@ public:
 
     Mesh* getBoardMesh();
     void  loadBoardMesh();
+
+    Mesh* getBoardTileMesh();
+    void  loadBoardTileMesh();
 
     void loadAllMeshes();
 };
