@@ -1,7 +1,6 @@
 #include "Renderer3D.hpp"
 #include <cmath>
 #include <filesystem>
-#include <iostream>
 #include <lib/glm/ext.hpp>
 #include <memory>
 #include <string>
@@ -111,15 +110,7 @@ Renderer3D::Renderer3D()
                 int objectIndex = picker.getObjectIndex((xpos + 1) / 2 * window.getWidth(), (ypos + 1) / 2 * window.getHeight());
                 if (objectIndex >= 0 && objectIndex < scene.getObjects().size())
                 {
-                    // Get the object from the scene using the index
-
-                    Object& obj = scene.getObjects()[objectIndex];
-                    obj.setMaterial(Material(
-                        glm::vec3(1.0f, 0.0f, 0.0f), // Ambient color
-                        glm::vec3(1.0f, 0.0f, 0.0f), // Diffuse color
-                        glm::vec3(1.0f, 1.0f, 1.0f), // Specular color
-                        32.0f                        // Shininess
-                    ));
+                    scene.getObjects()[objectIndex]->click();
                 }
             }
         }
@@ -128,8 +119,7 @@ Renderer3D::Renderer3D()
 
 void Renderer3D::render(ChessGame& chessGame)
 {
-    scene = Scene::createChessGameScene(chessGame, meshLoader, *shaderProgramPtr);
-    scene.setCurrentCameraToTargetCamera();
+    createScene(chessGame);
 
     glEnable(GL_DEPTH_TEST);
     while (!window.shouldClose())
@@ -147,6 +137,13 @@ void Renderer3D::render(ChessGame& chessGame)
         window.swapBuffers();
     }
 };
+
+void Renderer3D::createScene(ChessGame& chessGame)
+{
+    // Create the scene and add objects to it
+    scene = Scene::createChessGameScene(chessGame, meshLoader, *shaderProgramPtr);
+    scene.setCurrentCameraToTargetCamera();
+}
 
 void Renderer3D::renderScene()
 {
@@ -177,13 +174,17 @@ void Renderer3D::renderScene()
     shaderProgramPtr->uniform3fv("viewPos", glm::value_ptr(camera->getPosition()));
 
     // Render each object in the scene
-    for (Object& obj : scene.getObjects())
+    for (Object* obj : scene.getObjects())
     {
+        if (!obj->canRender())
+        {
+            continue;
+        }
         // Set Material properties
-        renderMaterial(obj.getMaterial());
+        renderMaterial(obj->getMaterial());
 
-        shaderProgramPtr->uniformMatrix4fv("modelMatrix", glm::value_ptr(obj.getModelMatrix()));
-        renderObject(obj);
+        shaderProgramPtr->uniformMatrix4fv("modelMatrix", glm::value_ptr(obj->getModelMatrix()));
+        renderObject(*obj);
     }
 }
 
@@ -221,7 +222,7 @@ void Renderer3D::renderLights(std::vector<Light>& lights)
     }
 }
 
-void Renderer3D::renderMaterial(Material& material)
+void Renderer3D::renderMaterial(Material material)
 {
     shaderProgramPtr->uniform3fv("material.ambient", glm::value_ptr(material.getAmbient()));
     shaderProgramPtr->uniform3fv("material.diffuse", glm::value_ptr(material.getDiffuse()));
@@ -243,11 +244,11 @@ void Renderer3D::renderPickingScene()
 
     for (size_t i{0}; i < scene.getObjects().size(); ++i)
     {
-        Object& obj = scene.getObjects()[i];
+        Object* obj = scene.getObjects()[i];
         // Set Material properties
-        picker.getShaderProgram().uniformMatrix4fv("modelMatrix", glm::value_ptr(obj.getModelMatrix()));
+        picker.getShaderProgram().uniformMatrix4fv("modelMatrix", glm::value_ptr(obj->getModelMatrix()));
         picker.getShaderProgram().uniform1f("gObjectIndex", (i + 1) / 255.0f);
-        renderObject(obj);
+        renderObject(*obj);
     }
 
     picker.unbind();

@@ -27,12 +27,17 @@ public:
     Renderer3D();
 
     void render(ChessGame& chessGame) override;
+    void renderWithImGui(ChessGame& chessGame);
 
     void renderScene();
     void renderObject(Object& object);
 
     void renderLights(std::vector<Light>& lights);
-    void renderMaterial(Material& material);
+    void renderMaterial(Material material);
 
     void renderPickingScene();
+
+    void createScene(ChessGame& chessGame);
+
+    Window& getWindow() { return window; }
 };
