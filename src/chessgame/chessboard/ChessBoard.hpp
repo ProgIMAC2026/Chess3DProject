@@ -3,14 +3,18 @@
 #include <vector>
 #include "ChessTile.hpp"
 
+class ChessGame; // Forward declaration
+
 class ChessBoard {
+    ChessGame* chessGame;
     ChessTile* tiles[8][8];
 
 public:
-    ChessBoard();
+    ChessBoard(ChessGame* chessGame);
     ~ChessBoard();
 
     ChessTile* getTile(PositionTile position) { return tiles[position.x][position.y]; }
+    ChessGame* getChessGame() const { return chessGame; }
 
     ChessTile* lastMovedPawnTile = nullptr;
 

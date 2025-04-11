@@ -1,7 +1,5 @@
 #include "Pawn.hpp"
-#include <iostream>
 #include "../chessboard/ChessBoard.hpp"
-#include "chessgame/piece/PieceType.hpp"
 
 std::vector<ChessTile*> Pawn::getPossibleMoves()
 {
@@ -14,25 +12,20 @@ std::vector<ChessTile*> Pawn::getPossibleMoves()
     }
 
     PositionTile currentPos = _currentTilePtr->getPosition();
-    int          x          = currentPos.x;
-    int          y          = currentPos.y;
 
-    int direction  = (_color == Color::WHITE) ? 1 : -1;
-    int startRow   = (_color == Color::WHITE) ? 1 : 6;
-    int passantRow = (_color == Color::WHITE) ? 4 : 3;
+    PositionTile direction = (_color == Color::BLACK) ? PositionTile(1, 0) : PositionTile(-1, 0);
 
-    // Vérifier la case devant
-    if (x + direction >= 0 && x + direction < 8) // Vérifier les limites du plateau
+    if ((currentPos + direction).x >= 0 && (currentPos + direction).x < 8) // Vérifier les limites du plateau
     {
-        ChessTile* frontTile = board->getTile({x + direction, y});
+        ChessTile* frontTile = board->getTile(currentPos + direction);
         if (frontTile && !frontTile->getPiece())
         {
             moves.push_back(frontTile);
 
             // Vérifier si le pion peut avancer de deux cases
-            if (y == startRow)
+            if (currentPos.x == ((_color == Color::BLACK) ? 1 : 6))
             {
-                ChessTile* doubleMoveTile = board->getTile({x + 2 * direction, y});
+                ChessTile* doubleMoveTile = board->getTile(currentPos + direction * (unsigned int)(2));
                 if (doubleMoveTile && !doubleMoveTile->getPiece())
                 {
                     moves.push_back(doubleMoveTile);
@@ -42,14 +35,13 @@ std::vector<ChessTile*> Pawn::getPossibleMoves()
     }
 
     // Vérifier les captures diagonales
-    for (int dx : {-1, 1})
+    for (PositionTile dirDiagonal : {PositionTile(0, 1), PositionTile(0, -1)})
     {
-        int newX = x + direction;
-        int newY = y + dx;
+        PositionTile diagPosition = direction + dirDiagonal + currentPos;
 
-        if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) // Vérifier les limites du plateau
+        if (diagPosition.x >= 0 && diagPosition.x < 8 && diagPosition.y >= 0 && diagPosition.y < 8) // Vérifier les limites du plateau
         {
-            ChessTile* diagonalTile = board->getTile({newX, newY});
+            ChessTile* diagonalTile = board->getTile(diagPosition);
             if (diagonalTile)
             {
                 Piece* targetPiece = diagonalTile->getPiece();
@@ -61,33 +53,33 @@ std::vector<ChessTile*> Pawn::getPossibleMoves()
         }
     }
 
-    if (x == passantRow)
-    {
-        for (int dx : {-1, 1}) // Vérification des cases diagonales gauche et droite
-        {
-            int newY = y + dx;         // Déplacement gauche-droite
-            if (newY >= 0 && newY < 8) // Vérifier les limites du plateau
-            {
-                ChessTile* adjacentTile = board->getTile({x, newY});
-                if (adjacentTile)
-                {
-                    Piece* adjacentPiece = adjacentTile->getPiece();
-                    if (adjacentPiece && adjacentPiece->getType() == PieceType::PAWN && adjacentPiece->getColor() != _color)
-                    {
-                        // Vérification de la possibilité de prise en passant
-                        if (board->isEnPassantAvailable(adjacentTile))
-                        {
-                            ChessTile* enPassantTile = board->getTile({x + direction, newY}); // Case de prise en passant
-                            if (enPassantTile)
-                            {
-                                moves.push_back(enPassantTile); // Ajout de la case de prise en passant
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    // if (x == passantRow)
+    // {
+    //     for (int dx : {-1, 1}) // Vérification des cases diagonales gauche et droite
+    //     {
+    //         int newY = y + dx;         // Déplacement gauche-droite
+    //         if (newY >= 0 && newY < 8) // Vérifier les limites du plateau
+    //         {
+    //             ChessTile* adjacentTile = board->getTile({x, newY});
+    //             if (adjacentTile)
+    //             {
+    //                 Piece* adjacentPiece = adjacentTile->getPiece();
+    //                 if (adjacentPiece && adjacentPiece->getType() == PieceType::PAWN && adjacentPiece->getColor() != _color)
+    //                 {
+    //                     // Vérification de la possibilité de prise en passant
+    //                     if (board->isEnPassantAvailable(adjacentTile))
+    //                     {
+    //                         ChessTile* enPassantTile = board->getTile({x + direction, newY}); // Case de prise en passant
+    //                         if (enPassantTile)
+    //                         {
+    //                             moves.push_back(enPassantTile); // Ajout de la case de prise en passant
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     return moves;
 }

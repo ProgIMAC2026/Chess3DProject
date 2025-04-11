@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+#include <utility>
 #include <vector>
 #include "../chessboard/ChessTile.hpp"
 #include "Color.hpp"
@@ -12,6 +14,8 @@ protected:
     PieceType  _type;
     ChessTile* _currentTilePtr;
 
+    std::function<void()> _onMoveCallback = []() {};
+
     void setTile(ChessTile* tile)
     {
         tile->setPiece(this);
@@ -20,8 +24,8 @@ protected:
     }
 
 public:
-    Piece(Color color, ChessTile* tile)
-        : _color(color), _currentTilePtr(tile)
+    Piece(Color color, ChessTile* tile, std::function<void()> onMoveCallback = []() {})
+        : _color(color), _currentTilePtr(tile), _onMoveCallback(std::move(onMoveCallback))
     {
         _currentTilePtr->setPiece(this);
     }
@@ -31,5 +35,16 @@ public:
     virtual Color     getColor() { return _color; }
     virtual PieceType getType() { return _type; }
 
-    void moveTo(ChessTile* newTile) { setTile(newTile); }
+    virtual ChessTile* getCurrentTile() { return _currentTilePtr; }
+
+    void moveTo(ChessTile* newTile)
+    {
+        setTile(newTile);
+        _onMoveCallback();
+    }
+
+    void setOnMoveCallback(std::function<void()> onMoveCallback)
+    {
+        _onMoveCallback = std::move(onMoveCallback);
+    }
 };
