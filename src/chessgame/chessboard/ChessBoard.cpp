@@ -1,7 +1,8 @@
 #include "ChessBoard.hpp"
 #include "../piece/Piece.hpp"
 
-ChessBoard::ChessBoard()
+ChessBoard::ChessBoard(ChessGame* chessGame)
+    : chessGame(chessGame)
 {
     for (int i = 0; i < 8; i++)
     {

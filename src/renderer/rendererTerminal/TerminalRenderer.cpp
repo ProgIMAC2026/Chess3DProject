@@ -21,7 +21,7 @@ void TerminalRenderer::render(ChessGame& chessGame)
         {
             for (int j = 0; j < 8; j++)
             {
-                auto tile = chessGame.getChessBoard().getTile({i, j});
+                auto* tile = chessGame.getChessBoard().getTile({i, j});
 
                 if (tile == chessGame.getSelectedTile() || std::find(possibleMoves.begin(), possibleMoves.end(), tile) != possibleMoves.end())
                 {
@@ -34,7 +34,7 @@ void TerminalRenderer::render(ChessGame& chessGame)
 
                 if (tile->getPiece() != nullptr)
                 {
-                    std::cout << tile->getPiece()->getSymbol();
+                    std::cout << getPieceSymbol(tile->getPiece()->getType(), Color::BLACK); // TODO(colin): Fix this line to get the correct color of the piece
                 }
                 else
                 {
@@ -50,7 +50,28 @@ void TerminalRenderer::render(ChessGame& chessGame)
                     std::cout << " ";
                 }
             }
-            std::cout << std::endl;
+            std::cout << '\n';
         }
+    }
+}
+
+char TerminalRenderer::getPieceSymbol(PieceType type, Color color) const
+{
+    switch (type)
+    {
+    case PieceType::PAWN:
+        return 'P';
+    case PieceType::ROOK:
+        return 'R';
+    case PieceType::KNIGHT:
+        return 'N';
+    case PieceType::BISHOP:
+        return 'B';
+    case PieceType::QUEEN:
+        return 'Q';
+    case PieceType::KING:
+        return 'K';
+    default:
+        return '?'; // Unknown piece type
     }
 }

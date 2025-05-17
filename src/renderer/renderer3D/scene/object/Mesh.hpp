@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <cstddef>
 #include <vector>
 
 class Mesh {
@@ -20,9 +21,13 @@ private:
     void setupIBO();
 
 public:
+    Mesh() = default;
     Mesh(std::vector<GLfloat> vertices, std::vector<GLushort> indices);
     // Getter
     GLuint getVAO() const;
     GLuint getVBO() const;
     GLuint getIBO() const;
+
+    size_t getVerticesSize() const { return vertices.size(); }
+    size_t getIndicesSize() const { return indices.size(); }
 };

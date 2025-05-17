@@ -47,3 +47,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE quick_imgui::quick_imgui)
 # Add glm library
 add_subdirectory(lib/glm)
 target_link_libraries(${PROJECT_NAME} PUBLIC glm::glm)
+
+# Add tinyobjloader library
+add_library(tinyobjloader INTERFACE)
+target_include_directories(tinyobjloader SYSTEM INTERFACE lib/tinyobjloader)
+target_link_libraries(quick_imgui PUBLIC tinyobjloader)

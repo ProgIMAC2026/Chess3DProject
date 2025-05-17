@@ -16,9 +16,9 @@ class ChessTile {
 public:
     ChessTile(PositionTile position, ChessBoard* boardPtr)
         : position(position), _boardPtr(boardPtr) {}
-    PositionTile getPosition() { return position; }
+    PositionTile getPosition() const { return position; }
 
-    Piece*      getPiece() { return _piecePtr; }
+    Piece*      getPiece() const { return _piecePtr; }
     ChessBoard* getBoard() { return _boardPtr; }
 
     template<typename PieceType>
@@ -29,4 +29,7 @@ public:
 
     void setPiece(Piece* piece) { _piecePtr = piece; }
     void removePiece() { _piecePtr = nullptr; }
+
+    bool hasPiece() const { return _piecePtr != nullptr; }
+    bool isEmpty() const { return _piecePtr == nullptr; }
 };
